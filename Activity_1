@@ -1,0 +1,9 @@
+name = "Rhian Marck L. Coritico"
+age = 18
+id = 2025301281
+section= "BSIT"
+
+print("Name:",name)
+print("Age:",age)
+print("Id:",id)
+print("Section:",section)
