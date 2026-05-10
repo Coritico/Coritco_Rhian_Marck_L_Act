@@ -1,0 +1,129 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
+
+def compute_and_add():
+    try:
+        sid, name, course, subj = entry_id.get(), entry_name.get(), combo_course.get(), entry_subject.get()
+        if not (sid and name and course and subj):
+            messagebox.showerror("Error", "Fill in all student details.")
+            return
+
+        p, m, f = float(entry_prelim.get()), float(entry_midterm.get()), float(entry_final.get())
+        if not (0 <= p <= 100 and 0 <= m <= 100 and 0 <= f <= 100):
+            messagebox.showerror("Error", "Grades must be 0-100.")
+            return
+
+        # Weighted Formula: 30% Prelim, 30% Midterm, 40% Final
+        average = (p * 0.30) + (m * 0.30) + (f * 0.40)
+        
+        # --- UPDATED GRADING LOGIC (VI. Grade Table Reference) ---
+        avg = round(average) # Rounding to nearest whole number for range matching
+        
+        if avg >= 97: num, rem = "1.00", "Excellent"
+        elif avg >= 94: num, rem = "1.25", "Excellent"
+        elif avg >= 91: num, rem = "1.50", "Very Good"
+        elif avg >= 88: num, rem = "1.75", "Very Good"
+        elif avg >= 85: num, rem = "2.00", "Above Average"
+        elif avg >= 82: num, rem = "2.25", "Above Average"
+        elif avg >= 79: num, rem = "2.50", "Average"
+        elif avg >= 76: num, rem = "2.75", "Average"
+        elif avg >= 75: num, rem = "3.00", "Passing"
+        elif avg >= 72: num, rem = "3.25", "Conditional"
+        elif avg >= 69: num, rem = "3.50", "Conditional"
+        elif avg >= 66: num, rem = "3.75", "Failed"
+        elif avg >= 65: num, rem = "4.00", "Failed"
+        else: num, rem = "5.00", "Failed"
+
+        tree.insert("", "end", values=(sid, name, course, subj, f"{average:.2f}", num, rem))
+        clear_inputs()
+    except ValueError:
+        messagebox.showerror("Error", "Enter numeric values for grades.")
+
+def delete_record():
+    selected = tree.selection()
+    if selected: 
+        tree.delete(selected)
+    else: 
+        messagebox.showwarning("Selection", "Select a record.")
+
+def clear_inputs():
+    for e in [entry_id, entry_name, entry_subject, entry_prelim, entry_midterm, entry_final]:
+        e.delete(0, tk.END)
+    combo_course.set('')
+
+# --- GUI Setup ---
+root = tk.Tk()
+root.title("Grading System")
+root.geometry("850x620") 
+root.configure(bg="#f8f9fa")
+
+# Header
+tk.Label(root, text="STUDENT GRADING SYSTEM", font=("Arial", 11, "bold"), bg="#34495e", fg="white", pady=5).pack(fill="x")
+
+# INPUT SECTION
+input_frame = tk.LabelFrame(root, text=" Student Information & Grades ", bg="white", padx=15, pady=10)
+input_frame.pack(pady=10, padx=20, fill="x")
+
+input_frame.columnconfigure(1, weight=1)
+input_frame.columnconfigure(3, weight=1)
+
+L_STYLE = {"bg": "white", "font": ("Arial", 8, "bold")}
+E_STYLE = {"bd": 1, "relief": "solid"}
+
+# Expanded Course List
+course_list = sorted(["BSIT", "BSCS", "BSIS", "BSEMC", "BSCpE", "BSEE", "BSME", "BSCE", "BSBA", "BSHM", "BSTM", "BSPsych", "BSEd", "BAComm", "BSN", "BSCrim", "BSArch"])
+
+# Grid Layout for Inputs
+tk.Label(input_frame, text="Student ID:", **L_STYLE).grid(row=0, column=0, sticky="e", pady=5, padx=5)
+entry_id = tk.Entry(input_frame, **E_STYLE)
+entry_id.grid(row=0, column=1, sticky="we")
+
+tk.Label(input_frame, text="Prelim Grade:", **L_STYLE).grid(row=0, column=2, sticky="e", pady=5, padx=5)
+entry_prelim = tk.Entry(input_frame, **E_STYLE)
+entry_prelim.grid(row=0, column=3, sticky="we")
+
+tk.Label(input_frame, text="Student Name:", **L_STYLE).grid(row=1, column=0, sticky="e", pady=5, padx=5)
+entry_name = tk.Entry(input_frame, **E_STYLE)
+entry_name.grid(row=1, column=1, sticky="we")
+
+tk.Label(input_frame, text="Midterm Grade:", **L_STYLE).grid(row=1, column=2, sticky="e", pady=5, padx=5)
+entry_midterm = tk.Entry(input_frame, **E_STYLE)
+entry_midterm.grid(row=1, column=3, sticky="we")
+
+tk.Label(input_frame, text="Course:", **L_STYLE).grid(row=2, column=0, sticky="e", pady=5, padx=5)
+combo_course = ttk.Combobox(input_frame, values=course_list, state="readonly")
+combo_course.grid(row=2, column=1, sticky="we")
+
+tk.Label(input_frame, text="Final Grade:", **L_STYLE).grid(row=2, column=2, sticky="e", pady=5, padx=5)
+entry_final = tk.Entry(input_frame, **E_STYLE)
+entry_final.grid(row=2, column=3, sticky="we")
+
+tk.Label(input_frame, text="Subject:", **L_STYLE).grid(row=3, column=0, sticky="e", pady=5, padx=5)
+entry_subject = tk.Entry(input_frame, **E_STYLE)
+entry_subject.grid(row=3, column=1, sticky="we")
+
+# Action Buttons
+btn_sub_frame = tk.Frame(input_frame, bg="white")
+btn_sub_frame.grid(row=3, column=3, sticky="e", pady=5)
+tk.Button(btn_sub_frame, text="ADD", command=compute_and_add, bg="#27ae60", fg="white", width=8, relief="flat").pack(side="left", padx=2)
+tk.Button(btn_sub_frame, text="CLEAR", command=clear_inputs, bg="#95a5a6", fg="white", width=8, relief="flat").pack(side="left")
+
+# TABLE SECTION
+table_frame = tk.Frame(root)
+table_frame.pack(fill="both", expand=True, padx=20, pady=5)
+
+columns = ("ID", "Name", "Course", "Subject", "Average", "Numerical", "Remark")
+tree = ttk.Treeview(table_frame, columns=columns, show="headings", height=8)
+for col in columns:
+    tree.heading(col, text=col)
+    tree.column(col, width=95, anchor="center")
+
+tree.pack(side="left", fill="both", expand=True)
+scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=tree.yview)
+tree.configure(yscroll=scrollbar.set)
+scrollbar.pack(side="right", fill="y")
+
+# DELETE BUTTON AT THE BOTTOM
+tk.Button(root, text="DELETE SELECTED RECORD", command=delete_record, bg="#e74c3c", fg="white", font=("Arial", 9, "bold"), relief="flat", pady=8).pack(pady=10)
+
+root.mainloop()
