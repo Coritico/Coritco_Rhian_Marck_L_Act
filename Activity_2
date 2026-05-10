@@ -1,0 +1,13 @@
+buyer =(input("Who is the Buyer:"))
+item = (input("What you buy:"))
+quan = int(input(" How many:"))
+price = int(input("How much:"))
+
+
+print("item", price * quan)
+print("")
+print( "====================")
+print("Receipt")
+print("")
+print("Thank You:", buyer)
+print("Your Total is:", price * quan)
