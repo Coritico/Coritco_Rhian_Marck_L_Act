@@ -1,0 +1,123 @@
+import tkinter as tk
+from tkinter import messagebox
+
+def calculate_payroll():
+    try:
+        emp_number = entry_employee_number.get()
+        emp_name = entry_employee_name.get()
+        rate_per_day = float(entry_rate_per_day.get())
+        days_worked = int(entry_days_worked.get())
+        sss = float(entry_sss.get())
+        philhealth = float(entry_philhealth.get())
+        cash_advance = float(entry_cash_advance.get())
+        
+        if not emp_number or not emp_name:
+            messagebox.showerror("Error", "Fill all fields.")
+            return
+        
+        if rate_per_day < 0 or days_worked < 0 or sss < 0 or philhealth < 0 or cash_advance < 0:
+            messagebox.showerror("Error", "No negative values.")
+            return
+        
+        gross_pay = rate_per_day * days_worked
+        total_deductions = sss + philhealth + cash_advance
+        net_pay = gross_pay - total_deductions
+        
+        result_text = (
+            f"Employee Number: {emp_number}\n"
+            f"Name: {emp_name}\n"
+            f"Rate/Day: ₱{rate_per_day:.2f}\n"
+            f"Days Worked: {days_worked}\n"
+            f"Gross Pay: ₱{gross_pay:.2f}\n"
+            f"\n"
+            f"SSS: ₱{sss:.2f}\n"
+            f"PhilHealth: ₱{philhealth:.2f}\n"
+            f"Cash Advance: ₱{cash_advance:.2f}\n"
+            f"Total Deductions: ₱{total_deductions:.2f}\n"
+            f"\n"
+            f"NET PAY: ₱{net_pay:.2f}"
+        )
+        
+        result_label.config(text=result_text)
+    except ValueError:
+        messagebox.showerror("Error", "Invalid input.")
+
+def clear_fields():
+    entry_employee_number.delete(0, tk.END)
+    entry_employee_name.delete(0, tk.END)
+    entry_rate_per_day.delete(0, tk.END)
+    entry_days_worked.delete(0, tk.END)
+    entry_sss.delete(0, tk.END)
+    entry_philhealth.delete(0, tk.END)
+    entry_cash_advance.delete(0, tk.END)
+    result_label.config(text="")
+
+root = tk.Tk()
+root.title("Payroll System")
+root.geometry("420x750")
+
+tk.Label(root, text="PAYROLL SYSTEM", font=("Arial", 13, "bold")).pack(pady=8)
+
+frame_input = tk.Frame(root, padx=12)
+frame_input.pack(fill=tk.X)
+
+tk.Label(frame_input, text="Employee Number:", font=("Arial", 9)).pack(anchor="w")
+entry_employee_number = tk.Entry(frame_input, font=("Arial", 9), width=30)
+entry_employee_number.pack(fill=tk.X, pady=2)
+
+tk.Label(frame_input, text="Name:", font=("Arial", 9)).pack(anchor="w", pady=(6, 0))
+entry_employee_name = tk.Entry(frame_input, font=("Arial", 9), width=30)
+entry_employee_name.pack(fill=tk.X, pady=2)
+
+tk.Label(frame_input, text="Rate/Day:", font=("Arial", 9)).pack(anchor="w", pady=(6, 0))
+entry_rate_per_day = tk.Entry(frame_input, font=("Arial", 9), width=30)
+entry_rate_per_day.pack(fill=tk.X, pady=2)
+
+tk.Label(frame_input, text="Days Worked:", font=("Arial", 9)).pack(anchor="w", pady=(6, 0))
+entry_days_worked = tk.Entry(frame_input, font=("Arial", 9), width=30)
+entry_days_worked.pack(fill=tk.X, pady=2)
+
+separator1 = tk.Frame(root, height=1, bg="gray")
+separator1.pack(fill=tk.X, pady=8)
+
+tk.Label(root, text="DEDUCTIONS", font=("Arial", 11, "bold")).pack(pady=5)
+
+frame_ded = tk.Frame(root, padx=12)
+frame_ded.pack(fill=tk.X)
+
+tk.Label(frame_ded, text="SSS:", font=("Arial", 9)).pack(anchor="w")
+entry_sss = tk.Entry(frame_ded, font=("Arial", 9), width=30)
+entry_sss.pack(fill=tk.X, pady=2)
+
+tk.Label(frame_ded, text="PhilHealth:", font=("Arial", 9)).pack(anchor="w", pady=(6, 0))
+entry_philhealth = tk.Entry(frame_ded, font=("Arial", 9), width=30)
+entry_philhealth.pack(fill=tk.X, pady=2)
+
+tk.Label(frame_ded, text="Cash Advance:", font=("Arial", 9)).pack(anchor="w", pady=(6, 0))
+entry_cash_advance = tk.Entry(frame_ded, font=("Arial", 9), width=30)
+entry_cash_advance.pack(fill=tk.X, pady=2)
+
+separator2 = tk.Frame(root, height=1, bg="gray")
+separator2.pack(fill=tk.X, pady=8)
+
+frame_btn = tk.Frame(root, padx=12)
+frame_btn.pack(fill=tk.X, pady=6)
+
+btn_compute = tk.Button(frame_btn, text="Compute", command=calculate_payroll, bg="#4CAF50", fg="white", font=("Arial", 9, "bold"), width=10)
+btn_compute.pack(side=tk.LEFT, padx=3)
+
+btn_clear = tk.Button(frame_btn, text="Clear", command=clear_fields, bg="#FF9800", fg="white", font=("Arial", 9, "bold"), width=10)
+btn_clear.pack(side=tk.LEFT, padx=3)
+
+separator3 = tk.Frame(root, height=1, bg="gray")
+separator3.pack(fill=tk.X, pady=8)
+
+tk.Label(root, text="SUMMARY", font=("Arial", 11, "bold")).pack(pady=5)
+
+frame_result = tk.Frame(root, padx=12)
+frame_result.pack(fill=tk.BOTH, expand=True, padx=12, pady=(0, 12))
+
+result_label = tk.Label(frame_result, text="", font=("Courier", 8), justify="left", bg="white", fg="black", anchor="nw", relief=tk.SUNKEN, bd=1, padx=8, pady=8)
+result_label.pack(fill=tk.BOTH, expand=True)
+
+root.mainloop()
